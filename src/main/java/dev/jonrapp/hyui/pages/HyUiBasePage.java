@@ -1,4 +1,4 @@
-package dev.jonrapp.hyui;
+package dev.jonrapp.hyui.pages;
 
 import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.util.RawJsonReader;
@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPage;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
+import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
@@ -14,8 +15,12 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import dev.jonrapp.hyui.bindings.UIBindingManager;
+import dev.jonrapp.hyui.events.EventBinding;
 import dev.jonrapp.hyui.events.EventCodec;
+import dev.jonrapp.hyui.events.EventHandler;
 import dev.jonrapp.hyui.events.EventRouter;
+import dev.jonrapp.hyui.support.UIEventSupport;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,13 +36,15 @@ import java.io.IOException;
  * Subclasses should implement their UI structure and event handling logic by utilizing
  * the {@link EventRouter} and {@link EventCodec} provided by this class.
  */
-public abstract class HyUIPage extends CustomUIPage {
+public abstract class HyUiBasePage extends CustomUIPage {
     @Nonnull
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     @Nonnull
     private final EventCodec eventCodec;
     @Nonnull
     private final EventRouter eventRouter;
+    @Nonnull
+    private final UIEventSupport eventSupport;
 
     /**
      * Constructs a new HyUI page for the specified player.
@@ -45,10 +52,11 @@ public abstract class HyUIPage extends CustomUIPage {
      * @param playerRef the reference to the player viewing this page
      * @param lifetime the lifetime scope of this custom page
      */
-    public HyUIPage(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime) {
+    public HyUiBasePage(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime) {
         super(playerRef, lifetime);
         this.eventCodec = new EventCodec();
         this.eventRouter = new EventRouter(this.eventCodec);
+        this.eventSupport = new UIEventSupport(this.eventRouter, this::sendUpdate);
     }
 
     /**
@@ -137,5 +145,23 @@ public abstract class HyUIPage extends CustomUIPage {
     @Nonnull
     public EventRouter getEventRouter() {
         return eventRouter;
+    }
+
+    public <T> void registerEventHandler(@Nonnull String action, @Nonnull EventHandler<T> handler) {
+        eventSupport.registerEventHandler(action, this, handler);
+    }
+
+    protected void bindEvent(@Nonnull CustomUIEventBindingType bindingType, @Nonnull String selector,
+                             @Nonnull UIEventBuilder events, @Nonnull EventBinding eventBinding) {
+        eventSupport.bindEvent(bindingType, selector, events, eventBinding, this);
+    }
+
+    public void unloadEvents() {
+        eventSupport.unloadEvents();
+    }
+
+    @Nonnull
+    public UIBindingManager getBindingManager() {
+        return eventSupport.getBindingManager();
     }
 }

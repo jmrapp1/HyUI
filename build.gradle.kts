@@ -42,6 +42,7 @@ val patchline: String by lazy {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -55,6 +56,25 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+sourceSets {
+    create("examples") {
+        java {
+            srcDir("examples/main/java")
+        }
+        resources {
+            srcDir("examples/main/resources")
+        }
+        compileClasspath += sourceSets["main"].output
+        runtimeClasspath += sourceSets["main"].output
+    }
+}
+
+configurations {
+    getByName("examplesImplementation") {
+        extendsFrom(configurations["implementation"])
+    }
 }
 
 java {
@@ -97,6 +117,8 @@ publishing {
     }
     
     repositories {
+        mavenLocal()
+        
         maven {
             name = "CentralPortal"
             url = uri("https://central.sonatype.com/api/v1/publisher/upload")
@@ -110,5 +132,9 @@ publishing {
 }
 
 signing {
+    // Only sign when publishing to Maven Central, not for local publishing
+    setRequired({
+        gradle.taskGraph.hasTask("publishMavenJavaPublicationToCentralPortalRepository")
+    })
     sign(publishing.publications["mavenJava"])
 }
