@@ -4,10 +4,12 @@ plugins {
     id("java")
     id("maven-publish")
     id("signing")
+    id("com.gradle.plugin-publish") version "1.2.1" apply false
+    id("com.gradleup.nmcp") version "0.0.8"
 }
 
 group = "dev.jonrapp"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 // Detect Hytale installation directory
 val hytaleHome: String by lazy {
@@ -118,23 +120,17 @@ publishing {
     
     repositories {
         mavenLocal()
-        
-        maven {
-            name = "CentralPortal"
-            url = uri("https://central.sonatype.com/api/v1/publisher/upload")
-            
-            credentials {
-                username = findProperty("centralPortalUsername") as String? ?: System.getenv("CENTRAL_PORTAL_USERNAME")
-                password = findProperty("centralPortalPassword") as String? ?: System.getenv("CENTRAL_PORTAL_PASSWORD")
-            }
-        }
     }
 }
 
 signing {
-    // Only sign when publishing to Maven Central, not for local publishing
-    setRequired({
-        gradle.taskGraph.hasTask("publishMavenJavaPublicationToCentralPortalRepository")
-    })
     sign(publishing.publications["mavenJava"])
+}
+
+nmcp {
+    publishAllPublications {
+        username.set(findProperty("centralPortalUsername") as String? ?: System.getenv("CENTRAL_PORTAL_USERNAME"))
+        password.set(findProperty("centralPortalPassword") as String? ?: System.getenv("CENTRAL_PORTAL_PASSWORD"))
+        publicationType.set("AUTOMATIC")
+    }
 }

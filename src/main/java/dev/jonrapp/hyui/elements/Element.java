@@ -20,7 +20,7 @@ import static dev.jonrapp.hyui.utils.UiUtils.selectors;
  * its own lifecycle, event handlers, UI updates, and data bindings. Elements can:
  * <ul>
  * <li>Register event handlers that respond to client-side interactions</li>
- * <li>Use {@link UIBindable} fields with {@link dev.jonrapp.hyui.bindings.UIBinding} for automatic data binding</li>
+ * <li>Use {@link dev.jonrapp.hyui.bindings.UIBindable} fields with {@link dev.jonrapp.hyui.bindings.UIBinding} for automatic data binding</li>
  * <li>Be created as standalone elements or as items in arrays/lists</li>
  * </ul>
  * <p>
@@ -43,7 +43,7 @@ public abstract class Element<T extends HyUiBasePage> {
      * <ol>
      * <li>Initializes the event support system</li>
      * <li>Scans for {@link dev.jonrapp.hyui.bindings.UIBinding} annotated fields</li>
-     * <li>Initializes {@link UIBindable} fields for automatic data binding</li>
+     * <li>Initializes {@link dev.jonrapp.hyui.bindings.UIBindable} fields for automatic data binding</li>
      * </ol>
      *
      * @param pageRef the parent page that owns this element
@@ -110,7 +110,7 @@ public abstract class Element<T extends HyUiBasePage> {
      * <ul>
      * <li>Add UI commands to create/configure the element's visual structure</li>
      * <li>Register event bindings for user interactions</li>
-     * <li>Set initial values for {@link UIBindable} fields if needed</li>
+     * <li>Set initial values for {@link dev.jonrapp.hyui.bindings.UIBindable} fields if needed</li>
      * </ul>
      *
      * @param root the root selector or path for this element
