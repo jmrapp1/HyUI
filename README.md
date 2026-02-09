@@ -53,9 +53,9 @@ dependencies {
 
 ### 1. Pages
 
-Pages are the primary entry point for UI in Hytale. HyUI provides `HyUiPage`, 
+HyUI provides `HyUiPage`, 
 an enhanced page implementation that simplifies event handling, data binding, 
-and element management. It includes built-in support for managing a "primary element", a single element that can be easily swapped out, making it perfect for tabbed interfaces or wizard-style UIs.
+and element management. It includes built-in support for managing a "primary element", a single element that can be easily swapped out, making it perfect for tabbed interfaces or wizard-style UIs. It's intended to replace the CustomUIPage and InteractiveCustomUIPage:
 
 ```java
 public class MyPage extends HyUiPage {
